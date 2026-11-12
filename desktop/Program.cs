@@ -73,7 +73,7 @@ internal sealed class ShelfWindow : Form
             try
             {
                 string health = await client.GetStringAsync(Origin + "/health");
-                if (!health.Contains("SpineShelf") || !health.Contains("0.2.0")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
+                if (!health.Contains("SpineShelf") || !health.Contains("0.2.1")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
                 running = true;
             }
             catch (HttpRequestException) { }

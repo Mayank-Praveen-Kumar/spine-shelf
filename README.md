@@ -4,7 +4,13 @@ A personal EPUB library and reader for Windows.
 
 ## Windows app
 
-Download the latest Windows ZIP from Releases, extract the entire folder, and open
+Download `SpineShelf-0.2.1-Setup-x64.exe` from Releases and run it. Setup installs for
+your Windows account, adds a Start menu shortcut, offers a desktop shortcut, and
+registers an uninstaller. It installs shared Microsoft runtimes only if missing;
+the .NET runtime step may require an administrator prompt. Your books and reading
+preferences survive upgrades and uninstall.
+
+For a portable copy, download the Windows ZIP from Releases, extract the folder, and open
 `SpineShelf.exe`. No Python or Node installation is needed for the packaged app.
 The lightweight build uses the shared .NET 10 Desktop Runtime and Microsoft Edge
 WebView2 Runtime. Both must be installed. It does not bundle Electron or Chromium.
@@ -30,6 +36,12 @@ You can also run `python shelf.py` to use the browser version, or double-click
 Create a portable Windows release with `./scripts/build-windows.ps1`.
 Pass `-Dotnet 'path/to/dotnet.exe'` if the SDK is not on PATH.
 
+To build the installer, install Inno Setup 6.3+ or 7 from jrsoftware.org, then run
+`./scripts/build-installer.ps1`. Pass `-SkipPortable` if the matching portable folder
+is already built, and `-Iscc 'path/to/ISCC.exe'` for a custom compiler location.
+The build verifies the official .NET download's SHA-512 and the WebView2 bootstrapper's
+Microsoft signature. Setup checks the .NET download's SHA-256 before running it.
+
 Features include EPUB import, a cover carousel, named shelves, custom backgrounds,
 reader fonts and themes, saved reading progress, and external book searches.
 
@@ -51,7 +63,7 @@ download-folder checks until an OceanofPDF search is opened.
 ## Versions and license
 
 `v0.1.0` preserves the original browser app source; `v0.2.0` adds the desktop window
-and refreshed interface. See CHANGELOG.md for known version history.
+and refreshed interface; `v0.2.1` adds the Windows installer. See CHANGELOG.md for version history.
 Application source is MIT licensed; dependencies retain their respective licenses.
 
 The original third-party click sound is replaced by an original generated sound.

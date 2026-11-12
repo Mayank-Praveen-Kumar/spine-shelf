@@ -184,7 +184,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         route = urlsplit(self.path).path
         if route == "/health":
-            self.json({"app": "SpineShelf", "version": "0.2.0"})
+            self.json({"app": "SpineShelf", "version": "0.2.1"})
         elif route == "/library":
             books = []
             for path in sorted(LIBRARY.glob("*.epub"), key=lambda item: item.stat().st_mtime):

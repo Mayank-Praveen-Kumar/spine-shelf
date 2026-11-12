@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-11-12
+
+- Downloadable per-user Windows installer with Start menu and optional desktop shortcuts.
+- Detect shared .NET 10 Desktop Runtime and WebView2; install only missing components.
+- Verify prerequisite downloads and preserve books/preferences during uninstall.
+- Build both portable ZIP and installer EXE in GitHub release automation.
+
 ## 0.2.0 — 2026-11-12
 
 - Undertone-inspired charcoal interface, red accents, rounded controls and navigation rail.

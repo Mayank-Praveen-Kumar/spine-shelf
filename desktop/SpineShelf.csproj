@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>SpineShelf</AssemblyName>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <ApplicationIcon>../assets/spine-shelf.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Spine Shelf</Product>
