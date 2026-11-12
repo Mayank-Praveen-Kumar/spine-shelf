@@ -1,0 +1,80 @@
+{
+  "classic": {
+    "colors": [
+      "#E74856",
+      "#E74856"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "light": {
+    "colors": [
+      "#FFFFFF",
+      "#F6F6F8",
+      "#E3E3E8"
+    ],
+    "ink": "#E74856"
+  },
+  "dark": {
+    "colors": [
+      "#2A2A2E",
+      "#0E0E10"
+    ],
+    "ink": "#E74856"
+  },
+  "blush": {
+    "colors": [
+      "#FFFFFF",
+      "#FFF1F3",
+      "#F8C9D2"
+    ],
+    "ink": "#DE3E55"
+  },
+  "sky": {
+    "colors": [
+      "#DDEEFF",
+      "#A9D2F7",
+      "#6FA9EA"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "sunset": {
+    "colors": [
+      "#FFC06A",
+      "#FF7A7E",
+      "#E23B52"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "violet": {
+    "colors": [
+      "#E2C8FF",
+      "#9B86F7",
+      "#5160DC"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "aurora": {
+    "colors": [
+      "#2FC2BE",
+      "#9EDFC6",
+      "#FFB894"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "midnight": {
+    "colors": [
+      "#0A1228",
+      "#14285E",
+      "#2850B8"
+    ],
+    "ink": "#FFFFFF"
+  },
+  "ruby": {
+    "colors": [
+      "#C0283E",
+      "#7E1226",
+      "#3E0712"
+    ],
+    "ink": "#FFFFFF"
+  }
+}

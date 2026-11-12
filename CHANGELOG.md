@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 — 2026-11-12
+
+- Follow Undertone’s current theme, accent, light/dark mode and all ten icon palettes.
+- Match the window/taskbar icon colours and cache the last appearance.
+- Enforce pill-shaped buttons and fields throughout search, library, reader and player.
+- Suspend theme checks while hidden or reading. Requires Undertone 1.8.2 for theme sync.
+
 ## 0.3.0 — 2026-11-12
 
 - Dedicated Undertone player page, accessible from the sidebar and reader.

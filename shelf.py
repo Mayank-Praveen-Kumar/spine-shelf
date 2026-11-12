@@ -200,6 +200,7 @@ class Handler(SimpleHTTPRequestHandler):
         link = UndertoneLink(LIBRARY)
         try:
             if route == "/undertone/state": self.json(link.state())
+            elif route == "/undertone/appearance": self.json(link.appearance())
             elif route == "/undertone/queue": self.json(link.queue())
             elif route == "/undertone/search": self.json(link.search(parse_qs(urlsplit(self.path).query).get("q",[""])[0]))
             elif route.startswith("/undertone/artwork/"):
@@ -214,7 +215,7 @@ class Handler(SimpleHTTPRequestHandler):
         if route.startswith("/undertone/"):
             self.music_get(route)
         elif route == "/health":
-            self.json({"app": "SpineShelf", "version": "0.3.0"})
+            self.json({"app": "SpineShelf", "version": "0.3.1"})
         elif route == "/library":
             books = []
             for path in sorted(LIBRARY.glob("*.epub"), key=lambda item: item.stat().st_mtime):
@@ -257,7 +258,11 @@ class Handler(SimpleHTTPRequestHandler):
                 self.reply(content, kind)
             except (KeyError, OSError, RuntimeError, zipfile.BadZipFile):
                 self.send_error(404)
-        elif route in ("/", "/style.css", "/app.js", "/music.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.wav", "/assets/spine-shelf.ico"):
+        elif re.fullmatch(r"/assets/icons/spine-(classic|light|dark|blush|sky|sunset|violet|aurora|midnight|ruby)\.ico",route):
+            self.reply((ROOT / route[1:]).read_bytes(),"image/x-icon")
+        elif route == "/assets/icon-palettes.json":
+            self.reply((ROOT / route[1:]).read_bytes(),"application/json")
+        elif route in ("/", "/style.css", "/app.js", "/music.js", "/appearance.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.wav", "/assets/spine-shelf.ico"):
             path = ROOT / ("index.html" if route == "/" else route[1:])
             if not path.is_file():
                 self.send_error(404)

@@ -32,7 +32,7 @@ internal static class Program
 
 internal sealed partial class ShelfWindow : Form
 {
-    private readonly WebView2 web = new() { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(37, 37, 37) };
+    private readonly WebView2 web = new() { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(13, 10, 23) };
     private readonly string root;
     private Process? server;
     private bool closing;
@@ -46,7 +46,7 @@ internal sealed partial class ShelfWindow : Form
         ClientSize = new Size(1200, 780);
         MinimumSize = new Size(640, 500);
         StartPosition = FormStartPosition.CenterScreen;
-        BackColor = Color.FromArgb(20, 20, 20);
+        BackColor = Color.FromArgb(26, 16, 40);
         Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         Controls.Add(web);
         Shown += async (_, _) => await StartAsync();
@@ -73,7 +73,7 @@ internal sealed partial class ShelfWindow : Form
             try
             {
                 string health = await client.GetStringAsync(Origin + "/health");
-                if (!health.Contains("SpineShelf") || !health.Contains("0.3.0")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
+                if (!health.Contains("SpineShelf") || !health.Contains("0.3.1")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
                 running = true;
             }
             catch (HttpRequestException) { }

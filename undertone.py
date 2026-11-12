@@ -55,7 +55,7 @@ class UndertoneLink:
     def request(self, route, body=None, artwork=False):
         port, token = self.discovery()
         payload = json.dumps(body).encode() if body is not None else None
-        headers = {"Authorization": "Bearer " + token, "User-Agent": "SpineShelf/0.3.0"}
+        headers = {"Authorization": "Bearer " + token, "User-Agent": "SpineShelf/0.3.1"}
         if payload is not None: headers["Content-Type"] = "application/json"
         request = Request(f"http://127.0.0.1:{port}/api/v1{route}", data=payload, headers=headers)
         try:
@@ -81,6 +81,7 @@ class UndertoneLink:
         except (ValueError,TypeError): raise LinkError("Undertone returned an unreadable response.", "invalid_response", 502) from None
 
     def state(self): return {"connected": True, "nowPlaying": self.request("/now-playing")}
+    def appearance(self): return self.request("/appearance")
     def queue(self): return self.request("/queue?limit=30")
     def search(self, query):
         if not isinstance(query,str) or not 1 <= len(query.strip()) <= 200: raise LinkError("Enter a song, artist, or album (up to 200 characters).", "bad_request", 400)

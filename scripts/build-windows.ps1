@@ -21,7 +21,7 @@ if (!$SkipFrontend) {
 if ($LASTEXITCODE) { throw 'Desktop build failed.' }
 $appDirectory = Join-Path $destination 'app'
 New-Item -ItemType Directory -Force -Path $appDirectory | Out-Null
-foreach ($name in @('shelf.py', 'undertone.py', 'index.html', 'app.js', 'music.js', 'style.css', 'button-click.wav')) {
+foreach ($name in @('shelf.py', 'undertone.py', 'index.html', 'app.js', 'music.js', 'appearance.js', 'style.css', 'button-click.wav')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $name) -Destination $appDirectory -Force
 }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'dist') -Destination $appDirectory -Recurse -Force

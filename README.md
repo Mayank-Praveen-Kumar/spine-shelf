@@ -4,7 +4,7 @@ A personal EPUB library and reader for Windows.
 
 ## Windows app
 
-Download `SpineShelf-0.3.0-Setup-x64.exe` from Releases and run it. Setup installs for
+Download `SpineShelf-0.3.1-Setup-x64.exe` from Releases and run it. Setup installs for
 your Windows account, adds a Start menu shortcut, offers a desktop shortcut, and
 registers an uninstaller. It installs shared Microsoft runtimes only if missing;
 the .NET runtime step may require an administrator prompt. Your books and reading
@@ -56,7 +56,7 @@ browser version, but browser-specific preferences and progress are separate.
 ## Undertone music player
 
 Use the music-note icon in the sidebar to open the Undertone player. Install Undertone
-1.8.1 or a newer build with Local API support, then switch on **Settings → Integrations
+1.8.2 or a newer build with Local API support, then switch on **Settings → Integrations
 → Local API** in Undertone and click **Connect** in Spine Shelf.
 
 The page shows the current track and artwork, playback controls, seek and volume,
@@ -71,6 +71,19 @@ local Python service reads Undertone's discovery file and keeps its token out of
 the web page. Requests go only to the loopback interface, and remote redirects are
 rejected. Turning off Local API in Undertone disconnects the player.
 
+## Shared appearance
+
+Spine Shelf follows Undertone's active theme, light/dark mode, accent and chosen icon
+palette through the local appearance endpoint. This includes listening modes, custom
+themes and artwork accents. The matching book icon updates in the app, title bar and
+taskbar; the shortcut's embedded icon uses the same default violet palette as Undertone.
+The last appearance is cached for starts when Undertone is closed. Theme checks run
+once every 15 seconds while visible, stop while hidden or reading, and refresh on focus.
+
+Buttons and single-line fields use capsule corners on every page. Reading paper themes
+remain available. Both apps use the same original soft click sound; Undertone's switch
+is under Settings → General → Interface click sounds.
+
 ## Performance
 
 Autoplay is off. The cover carousel renders on demand, stops while hidden or reading,
@@ -82,7 +95,7 @@ while its page is visible; it stops while reading, on other pages, or when hidde
 ## Versions and license
 
 `v0.1.0` preserves the original browser app source; `v0.2.0` adds the desktop window
-and refreshed interface; `v0.2.1` adds the Windows installer; `v0.3.0` adds the Undertone player. See CHANGELOG.md for version history.
+and refreshed interface; `v0.2.1` adds the Windows installer; `v0.3.0` adds the Undertone player, and `v0.3.1` shares its theme and icon colours. See CHANGELOG.md for version history.
 Application source is MIT licensed; dependencies retain their respective licenses.
 
 The original third-party click sound is replaced by an original generated sound.

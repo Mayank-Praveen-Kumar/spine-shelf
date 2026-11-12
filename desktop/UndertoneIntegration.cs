@@ -8,6 +8,32 @@ namespace SpineShelf;
 internal sealed partial class ShelfWindow
 {
     private bool undertoneActionRunning;
+    private string? undertoneIcon;
+
+    private void ApplyUndertoneAppearance(JsonElement data)
+    {
+        if (!data.TryGetProperty("iconVariant", out var chosen) || chosen.ValueKind != JsonValueKind.String) return;
+        string? variant = chosen.GetString();
+        if (variant is not ("classic" or "light" or "dark" or "blush" or "sky" or "sunset" or "violet" or "aurora" or "midnight" or "ruby")) return;
+        if (variant != undertoneIcon)
+        {
+            string path = Path.Combine(root, "assets", "icons", $"spine-{variant}.ico");
+            if (File.Exists(path))
+            {
+                using var icon = new Icon(path);
+                var previous = Icon;
+                Icon = (Icon)icon.Clone();
+                previous?.Dispose();
+                undertoneIcon = variant;
+            }
+        }
+        if (data.TryGetProperty("background", out var background) && background.ValueKind == JsonValueKind.String
+            && background.GetString() is { } value && System.Text.RegularExpressions.Regex.IsMatch(value, "^#[0-9A-Fa-f]{6}$"))
+        {
+            BackColor = ColorTranslator.FromHtml(value);
+            web.DefaultBackgroundColor = BackColor;
+        }
+    }
     private static string LinkSettingsPath => Path.Combine(
         Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "SpineShelf", "undertone-link.json");
@@ -80,6 +106,11 @@ internal sealed partial class ShelfWindow
             using var json = JsonDocument.Parse(e.WebMessageAsJson);
             if (json.RootElement.ValueKind != JsonValueKind.Object || !json.RootElement.TryGetProperty("type", out var type)
                 || type.ValueKind != JsonValueKind.String) return;
+            if (type.GetString() == "undertone.appearance")
+            {
+                ApplyUndertoneAppearance(json.RootElement);
+                return;
+            }
             action = type.GetString();
         }
         catch (JsonException) { return; }
