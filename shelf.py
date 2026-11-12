@@ -10,11 +10,12 @@ import re
 import subprocess
 import tempfile
 from threading import Lock
-from urllib.parse import unquote, urlsplit, quote, urlencode
+from urllib.parse import unquote, urlsplit, quote, urlencode, parse_qs
 from urllib.request import Request, urlopen
 import webbrowser
 import xml.etree.ElementTree as ET
 import zipfile
+from undertone import UndertoneLink, LinkError
 
 ROOT = Path(__file__).resolve().parent
 LIBRARY = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "SpineShelf"
@@ -169,6 +170,8 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
+        if self.path.startswith("/undertone/"):
+            self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Security-Policy",
                          "sandbox allow-same-origin; default-src 'none'; style-src 'self' 'unsafe-inline'; "
                          "img-src 'self' data:; font-src 'self' data: blob:; media-src 'self'"
@@ -176,15 +179,42 @@ class Handler(SimpleHTTPRequestHandler):
                          "default-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'; "
                          "img-src 'self' blob: data: https://covers.openlibrary.org")
         self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            pass  # The view may have canceled an in-flight request while navigating.
 
     def json(self, value, status=200):
         self.reply(json.dumps(value).encode(), "application/json", status)
 
+    def local_music_request(self):
+        origin = f"http://127.0.0.1:{self.server.server_port}"
+        return (self.headers.get("Host") == origin.removeprefix("http://")
+                and self.headers.get("Sec-Fetch-Site") == "same-origin"
+                and (self.command != "POST" or self.headers.get("Origin") == origin))
+
+    def music_get(self, route):
+        if not self.local_music_request():
+            self.json({"error": "Open the music page inside Spine Shelf."},403)
+            return
+        link = UndertoneLink(LIBRARY)
+        try:
+            if route == "/undertone/state": self.json(link.state())
+            elif route == "/undertone/queue": self.json(link.queue())
+            elif route == "/undertone/search": self.json(link.search(parse_qs(urlsplit(self.path).query).get("q",[""])[0]))
+            elif route.startswith("/undertone/artwork/"):
+                content, kind = link.artwork(route.removeprefix("/undertone/artwork/"))
+                self.reply(content,kind)
+            else: self.send_error(404)
+        except LinkError as error:
+            self.json({"connected":False,"error":str(error),"code":error.code},error.status)
+
     def do_GET(self):
         route = urlsplit(self.path).path
-        if route == "/health":
-            self.json({"app": "SpineShelf", "version": "0.2.1"})
+        if route.startswith("/undertone/"):
+            self.music_get(route)
+        elif route == "/health":
+            self.json({"app": "SpineShelf", "version": "0.3.0"})
         elif route == "/library":
             books = []
             for path in sorted(LIBRARY.glob("*.epub"), key=lambda item: item.stat().st_mtime):
@@ -227,7 +257,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.reply(content, kind)
             except (KeyError, OSError, RuntimeError, zipfile.BadZipFile):
                 self.send_error(404)
-        elif route in ("/", "/style.css", "/app.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.wav", "/assets/spine-shelf.ico"):
+        elif route in ("/", "/style.css", "/app.js", "/music.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.wav", "/assets/spine-shelf.ico"):
             path = ROOT / ("index.html" if route == "/" else route[1:])
             if not path.is_file():
                 self.send_error(404)
@@ -239,6 +269,17 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         origin = f"http://127.0.0.1:{self.server.server_port}"
+        if self.path == "/undertone/control":
+            if not self.local_music_request() or self.headers.get_content_type() != "application/json":
+                self.json({"error":"Open the music page inside Spine Shelf."},403)
+                return
+            try:
+                length = int(self.headers.get("Content-Length","0"))
+                if not 0 < length <= 2048: raise ValueError
+                self.json(UndertoneLink(LIBRARY).command(json.loads(self.rfile.read(length))))
+            except (ValueError,UnicodeError): self.json({"error":"Invalid playback request."},400)
+            except LinkError as error: self.json({"connected":False,"error":str(error),"code":error.code},error.status)
+            return
         if self.path == "/open-ocean":
             if self.headers.get("Origin") != origin or self.headers.get_content_type() != "text/plain":
                 self.json({"error": "The app rejected the search request. Reopen Spine Shelf and try again."}, 403)

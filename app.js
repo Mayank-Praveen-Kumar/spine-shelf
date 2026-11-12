@@ -616,13 +616,17 @@ window.addEventListener('book-carousel-ready', render);
 
 function showPage() {
   const libraryOpen = location.hash === '#library';
+  const musicOpen = location.hash === '#music';
   document.getElementById('library').hidden = !libraryOpen;
-  document.getElementById('search-home').hidden = libraryOpen;
-  document.getElementById('nav-search').setAttribute('aria-current', libraryOpen ? 'false' : 'page');
+  document.getElementById('music').hidden = !musicOpen;
+  document.getElementById('search-home').hidden = libraryOpen || musicOpen;
+  document.getElementById('nav-search').setAttribute('aria-current', libraryOpen || musicOpen ? 'false' : 'page');
   document.getElementById('nav-library').setAttribute('aria-current', libraryOpen ? 'page' : 'false');
+  document.getElementById('nav-music').setAttribute('aria-current', musicOpen ? 'page' : 'false');
 }
 window.addEventListener('hashchange', showPage);
 showPage();
+$('reader-music').onclick = () => { reader.close(); location.hash = '#music'; };
 
 let oceanWatchTimer;
 let oceanWindowOpened = false;

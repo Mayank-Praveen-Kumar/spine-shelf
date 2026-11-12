@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
-if exist "release\SpineShelf-0.2.1-win-x64\SpineShelf.exe" (
-    start "" "release\SpineShelf-0.2.1-win-x64\SpineShelf.exe"
+if exist "release\SpineShelf-0.3.0-win-x64\SpineShelf.exe" (
+    start "" "release\SpineShelf-0.3.0-win-x64\SpineShelf.exe"
     exit /b
 )
 if exist "build\desktop\SpineShelf.exe" (

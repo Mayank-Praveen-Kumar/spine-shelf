@@ -19,3 +19,6 @@ ZapSplat Sound Preview.html
 .cache/
 desktop/bin/
 desktop/obj/
+
+local-api.json
+undertone-link.json

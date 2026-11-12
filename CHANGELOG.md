@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-11-12
+
+- Dedicated Undertone player page, accessible from the sidebar and reader.
+- Playback controls, seeking, volume, artwork, library search and queue management.
+- Launch or locate Undertone from the Windows app; support custom data folders.
+- Keep Local API tokens in the backend and pause polling while the player is hidden.
+- Requires Undertone with the restored Settings → Integrations → Local API switch.
+
 ## 0.2.1 — 2026-11-12
 
 - Downloadable per-user Windows installer with Start menu and optional desktop shortcuts.

@@ -7,6 +7,7 @@
 <link rel="icon" href="/assets/spine-shelf.ico">
 <link rel="stylesheet" href="/style.css">
 <script defer src="/app.js"></script>
+<script defer src="/music.js"></script>
 <link rel="stylesheet" href="/dist/carousel.css">
 <script defer src="/dist/carousel.js"></script>
 </head>
@@ -19,6 +20,7 @@
   <div class="nav-pages">
     <a id="nav-search" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>Search</span></a>
     <a id="nav-library" href="#library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><path d="m16 5 3-1 4 15-3 1z"/></svg><span>Library</span></a>
+    <a id="nav-music" href="#music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 18V5l11-2v13M9 9l11-2"/><ellipse cx="6" cy="18" rx="3" ry="2.5"/><ellipse cx="17" cy="16" rx="3" ry="2.5"/></svg><span>Undertone</span></a>
   </div>
   <span class="rail-caption" aria-hidden="true">SS</span>
 </nav>
@@ -44,6 +46,36 @@
 <p id="hint">Drag to browse · Double-click a book to read</p>
 <p id="status" role="status"></p>
 </main>
+<main id="music" hidden aria-label="Undertone music player">
+  <header class="library-heading music-heading"><div class="intro"><p class="eyebrow">YOUR READING SOUNDTRACK</p><h1>Music, in good company.</h1><p class="music-subtitle">Your Undertone library, right beside your books.</p></div><span id="music-connection" class="connection-pill" role="status">Not connected</span></header>
+  <section id="music-setup" class="music-setup" aria-labelledby="music-setup-title">
+    <div><h2 id="music-setup-title">Link your player</h2><p>In Undertone, turn on <strong>Local API</strong> in Settings → Integrations. Then connect below.</p><p id="music-link-help">Spine Shelf connects on this PC. Undertone handles the music.</p></div>
+    <div class="music-link-actions"><button id="music-connect" class="primary">Connect to Undertone</button><button id="music-open">Open Undertone ↗</button></div>
+  </section>
+  <p id="music-message" role="status" class="music-message"></p>
+  <section class="music-player" aria-label="Now playing">
+    <div class="music-art"><svg id="music-art-placeholder" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="50" cy="50" r="32"/><circle cx="50" cy="50" r="10"/><path d="M50 18v11M50 71v11"/></svg><img id="music-artwork" alt="Album artwork" hidden></div>
+    <div class="music-now"><p class="eyebrow" id="music-state-label">A SOUNDTRACK FOR YOUR NEXT CHAPTER</p><h2 id="music-title">Make yourself at home.</h2><p id="music-artist">Connect Undertone to choose something to listen to.</p><p id="music-album"></p>
+      <div class="music-transport">
+        <button id="music-shuffle" class="music-icon" aria-label="Shuffle" aria-pressed="false" data-music-control disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 5-6m3-4c1-1 2-2 4-2h3m-4-4 4 4-4 4"/></svg></button>
+        <button id="music-previous" class="music-icon" aria-label="Previous track" data-music-control disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14M19 5 8 12l11 7z"/></svg></button>
+        <button id="music-play" class="music-play" aria-label="Play" data-music-control disabled><svg id="music-play-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
+        <button id="music-next" class="music-icon" aria-label="Next track" data-music-control disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5v14M5 5l11 7-11 7z"/></svg></button>
+        <button id="music-repeat" class="music-icon" aria-label="Repeat: off" aria-pressed="false" data-music-control disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10V7h15m-4-4 4 4-4 4m5 3v3H5m4-4-4 4 4 4"/></svg><span id="music-repeat-one" hidden>1</span></button>
+      </div>
+      <div class="music-timeline"><span id="music-elapsed">0:00</span><input id="music-seek" type="range" aria-label="Playback position" min="0" max="1" step="1000" value="0" data-music-control disabled><span id="music-duration">0:00</span></div>
+      <label class="music-volume">Volume<input id="music-volume" type="range" min="0" max="100" value="70" aria-label="Music volume" data-music-control disabled><span id="music-volume-value">70%</span></label>
+    </div>
+  </section>
+  <div class="music-browse">
+    <section class="music-library" aria-labelledby="music-library-title"><div class="music-section-heading"><h2 id="music-library-title">Find your soundtrack</h2><span>From your Undertone library</span></div>
+      <form id="music-search-form"><input id="music-query" type="search" placeholder="Search songs, artists, or albums" aria-label="Search Undertone library" maxlength="200" required><button id="music-search-button" type="submit" disabled>Search</button></form>
+      <p id="music-search-message" class="music-list-note">Connect to search the music you already love.</p><div id="music-results" class="music-track-list"></div>
+    </section>
+    <section class="music-queue" aria-labelledby="music-queue-title"><div class="music-section-heading"><h2 id="music-queue-title">Up next</h2><button id="music-refresh-queue" disabled>Refresh</button></div><p id="music-queue-message" class="music-list-note">Your queue will appear here.</p><div id="music-queue-list" class="music-track-list"></div></section>
+  </div>
+  <div class="music-footer-actions"><button id="music-open-player">Open Undertone ↗</button><details class="music-link-settings"><summary>Connection settings</summary><p>Using a portable or custom Undertone installation? Locate the app or choose the data folder containing its <code>local-api.json</code> file.</p><div class="music-link-actions"><button id="music-locate">Locate Undertone.exe</button><button id="music-data-folder">Choose data folder</button></div><p id="music-desktop-note" hidden>Open the Spine Shelf desktop app to choose files and launch Undertone. Automatic connection also works in the browser.</p></details></div>
+</main>
 </div>
 <dialog id="background-dialog" aria-labelledby="background-title">
   <form method="dialog" class="background-header"><h2 id="background-title">Shelf background</h2><button>Done</button></form>
@@ -63,6 +95,7 @@
 <dialog id="reader" aria-label="EPUB reader">
 <div class="toolbar">
   <button id="close">← Library</button>
+  <button id="reader-music" type="button" aria-label="Open Undertone player">♫ Music</button>
   <strong id="title"></strong>
   <label class="setting"><span>Text</span><select id="text-size" aria-label="Text size">
     <option value="12">12 px</option>

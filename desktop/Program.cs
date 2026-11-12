@@ -30,7 +30,7 @@ internal static class Program
     [DllImport("user32.dll")] private static extern bool SetForegroundWindow(IntPtr handle);
 }
 
-internal sealed class ShelfWindow : Form
+internal sealed partial class ShelfWindow : Form
 {
     private readonly WebView2 web = new() { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(37, 37, 37) };
     private readonly string root;
@@ -73,7 +73,7 @@ internal sealed class ShelfWindow : Form
             try
             {
                 string health = await client.GetStringAsync(Origin + "/health");
-                if (!health.Contains("SpineShelf") || !health.Contains("0.2.1")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
+                if (!health.Contains("SpineShelf") || !health.Contains("0.3.0")) throw new InvalidOperationException("Port 48731 is occupied by another app version. Close that version first.");
                 running = true;
             }
             catch (HttpRequestException) { }
@@ -112,7 +112,8 @@ internal sealed class ShelfWindow : Form
             web.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             web.CoreWebView2.Settings.IsStatusBarEnabled = false;
             web.CoreWebView2.Settings.IsZoomControlEnabled = false;
-            web.CoreWebView2.Settings.IsWebMessageEnabled = false;
+            web.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            web.CoreWebView2.WebMessageReceived += HandleUndertoneMessage;
             web.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
             web.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
             web.CoreWebView2.PermissionRequested += (_, e) => e.State = CoreWebView2PermissionState.Deny;

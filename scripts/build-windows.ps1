@@ -21,7 +21,7 @@ if (!$SkipFrontend) {
 if ($LASTEXITCODE) { throw 'Desktop build failed.' }
 $appDirectory = Join-Path $destination 'app'
 New-Item -ItemType Directory -Force -Path $appDirectory | Out-Null
-foreach ($name in @('shelf.py', 'index.html', 'app.js', 'style.css', 'button-click.wav')) {
+foreach ($name in @('shelf.py', 'undertone.py', 'index.html', 'app.js', 'music.js', 'style.css', 'button-click.wav')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $name) -Destination $appDirectory -Force
 }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'dist') -Destination $appDirectory -Recurse -Force
@@ -36,6 +36,10 @@ if (!(Test-Path -LiteralPath $pythonArchive)) {
 $expectedHash = 'A6999BCBCBE56F937159EF79C2630260ECA99F65F7860BC5CD20430324079A44'
 if ((Get-FileHash -LiteralPath $pythonArchive -Algorithm SHA256).Hash -ne $expectedHash) { throw 'Python archive checksum mismatch.' }
 Expand-Archive -LiteralPath $pythonArchive -DestinationPath (Join-Path $destination 'python') -Force
+# Embedded Python uses an isolated import path, so explicitly include our app modules.
+Set-Content -LiteralPath (Join-Path $destination 'python/python315._pth') -Value "python315.zip`n.`n../app" -Encoding ascii
+& (Join-Path $destination 'python/python.exe') -c "import undertone"
+if ($LASTEXITCODE) { throw 'Packaged Python cannot import the Undertone adapter.' }
 $licenses = Join-Path $destination 'licenses'
 New-Item -ItemType Directory -Force -Path $licenses | Out-Null
 Copy-Item -LiteralPath (Join-Path $env:NUGET_PACKAGES 'microsoft.web.webview2/1.0.3650.58/LICENSE.txt') -Destination (Join-Path $licenses 'WebView2.txt') -Force
