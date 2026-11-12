@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spine Shelf</title>
+<link rel="stylesheet" href="/style.css">
+<script defer src="/app.js"></script>
+<link rel="stylesheet" href="/dist/carousel.css">
+<script defer src="/dist/carousel.js"></script>
+</head>
+<body>
+<nav class="app-nav" aria-label="Spine Shelf">
+  <a id="nav-search" href="#">Search</a>
+  <a id="nav-library" href="#library">Library</a>
+</nav>
+<main id="search-home" aria-label="Search for EPUB books online">
+  <div id="epub-search"></div>
+  <p id="search-status" role="status"></p>
+</main>
+<main id="library" hidden>
+<header><span class="wordmark">SPINE SHELF</span><button id="import">＋ Import EPUBs</button><input id="files" type="file" accept=".epub" multiple hidden></header>
+<section class="intro"><p>YOUR PERSONAL LIBRARY</p><h1>The reading room</h1><span id="count"></span></section>
+<div class="shelf-controls">
+  <label>Shelf <select id="shelf-select"><option value="">All books</option></select></label>
+  <form id="create-shelf"><input id="shelf-name" aria-label="New shelf name" placeholder="New shelf name" maxlength="60" required><button>Create shelf</button></form>
+  <label id="add-existing" hidden>Add book <select id="existing-book" aria-label="Add an existing book"></select></label>
+  <button id="background-settings" type="button" hidden>Background</button>
+</div>
+<div id="shelf" aria-label="Bookshelf"><div id="books"></div><div id="cover-gallery"></div></div>
+<p id="hint">Drag to browse · Double-click a book to read</p>
+<p id="status" role="status"></p>
+</main>
+<dialog id="background-dialog" aria-labelledby="background-title">
+  <form method="dialog" class="background-header"><h2 id="background-title">Shelf background</h2><button>Done</button></form>
+  <div class="shelf-controls">
+    <button id="upload-background">Upload image</button>
+    <input id="background-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
+    <button id="clear-background">Use default</button>
+  </div>
+  <div class="shelf-controls">
+    <label>Artwork for <select id="artwork-book" aria-label="Book to find artwork for"></select></label>
+    <button id="lookup-artwork">Find online artwork</button>
+  </div>
+  <p class="artwork-note">Online lookup sends the selected book’s title and author to Open Library.</p>
+  <p id="artwork-status" role="status"></p>
+  <div id="artwork-results"></div>
+</dialog>
+<dialog id="reader" aria-label="EPUB reader">
+<div class="toolbar">
+  <button id="close">← Library</button>
+  <strong id="title"></strong>
+  <label class="setting"><span>Text</span><select id="text-size" aria-label="Text size">
+    <option value="12">12 px</option>
+    <option value="13">13 px</option>
+    <option value="14">14 px</option>
+    <option value="15">15 px</option>
+    <option value="16">16 px</option>
+    <option value="17">17 px</option>
+    <option value="18">18 px</option>
+    <option value="19" selected>19 px</option>
+    <option value="20">20 px</option>
+    <option value="21">21 px</option>
+    <option value="22">22 px</option>
+    <option value="23">23 px</option>
+    <option value="24">24 px</option>
+    <option value="25">25 px</option>
+    <option value="26">26 px</option>
+    <option value="27">27 px</option>
+    <option value="28">28 px</option>
+    <option value="29">29 px</option>
+    <option value="30">30 px</option>
+    <option value="31">31 px</option>
+  </select></label>
+  <label class="setting"><span>Font</span><select id="font" aria-label="Reading font">
+    <option value="">Georgia</option>
+  </select></label>
+  <button id="add-font" type="button">Add font</button>
+  <input id="font-file" type="file" accept=".ttf,.otf,.woff,.woff2" hidden>
+  <span id="font-status" class="font-status" role="status" hidden></span>
+  <label class="setting"><span>Theme</span><select id="theme" aria-label="Reading theme">
+    <option value="paper">Paper</option><option value="sepia">Sepia</option><option value="night">Night</option>
+  </select></label>
+</div>
+<div class="reading-area">
+  <iframe id="chapter" title="Book section" sandbox="allow-same-origin"></iframe>
+</div>
+<footer class="reading-footer">
+  <label>Go to <select id="sections" aria-label="Book section"></select></label>
+  <progress id="progress" max="1" value="0" aria-label="Reading progress"></progress>
+  <span id="page" aria-live="polite"></span>
+</footer>
+</dialog>
+<div id="transition" aria-hidden="true"></div>
+</body>
+</html>
+
+
+
+
+

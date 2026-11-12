@@ -1,0 +1,18 @@
+node_modules/
+dist/
+__pycache__/
+release/
+build/
+vendor/
+.venv/
+.qa/
+*.epub
+*.pdf
+*.crdownload
+Ocean EPUBs/
+1lib EPUBs/
+books.txt
+signup_probe.py
+button-click.mp3
+ZapSplat Sound Preview.html
+*.log
