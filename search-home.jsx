@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import PromptBar from './PromptBar';
 
 const sources = [
-  {key: 'oceanofpdf', name: 'oceanofpdf'},
+  {key: 'oceanofpdf', name: 'OceanofPDF'},
   {key: '1lib', name: '1lib'}
 ];
 
@@ -27,6 +27,7 @@ async function searchOnline(title, {model}) {
     }
     const result = await response.json();
     if (!response.ok) throw new Error(result.error);
+    window.dispatchEvent(new Event('ocean-window-opened'));
     status.textContent = 'English EPUB downloads from this window are added to your library automatically.';
   } catch (error) {
     status.textContent = error.message;
@@ -34,10 +35,10 @@ async function searchOnline(title, {model}) {
 }
 
 createRoot(document.getElementById('epub-search')).render(
-  <PromptBar placeholder="search for epub book online"
+  <PromptBar placeholder="Search by book title…"
     sources={[]} commands={[]} efforts={[]} models={sources}
-    width={640} radius={22} maxRows={3}
-    background="#2c2420" color="#f2e7d4" menuBackground="#372b25"
+    width={640} radius={24} maxRows={3}
+    background="#323232" color="#f5f5f5" menuBackground="#383838" sparkColor="#e74856"
     onSend={searchOnline} />
 );
 

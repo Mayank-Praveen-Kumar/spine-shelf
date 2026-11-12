@@ -1,5 +1,7 @@
 {
   "name": "spine-shelf",
+  "version": "0.2.0",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "build": "esbuild carousel.jsx --bundle --minify --outdir=dist --jsx=automatic"

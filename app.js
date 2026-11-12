@@ -34,6 +34,7 @@ function render() {
   if (art) shelf.style.setProperty('--shelf-art', 'url(' + JSON.stringify(art) + ')');
   else shelf.style.removeProperty('--shelf-art');
   $('books').replaceChildren();
+  $('hint').hidden = !visible.length;
   if (!visible.length) {
     const empty = document.createElement('p');
     empty.className = 'empty';
@@ -126,6 +127,7 @@ async function openBook(book, spine, bounds, color) {
     if (spine) spine.style.visibility = '';
     opening = false;
     reader.showModal();
+    window.dispatchEvent(new CustomEvent('spine-carousel-paused', {detail: true}));
     paginate();
   }
 }
@@ -138,7 +140,7 @@ function showSection(startPage = 0) {
   chapter.src = active.chapters[section];
 }
 
-function showPage() {
+function updateReadingPage() {
   chapter.contentWindow.scrollTo({left: page * pageWidth, top: 0, behavior: 'instant'});
   $('page').textContent = (page + 1) + ' / ' + pageCount;
   localStorage.setItem('section:' + active.id, String(section));
@@ -199,7 +201,7 @@ function paginate() {
   const target = pendingPage ?? Math.floor(page * pageCount / previousCount);
   page = Math.max(0, Math.min(target, pageCount - 1));
   pendingPage = null;
-  showPage();
+  updateReadingPage();
 }
 
 function turnPage(direction) {
@@ -207,7 +209,7 @@ function turnPage(direction) {
   const target = page + direction;
   if (target >= 0 && target < pageCount) {
     page = target;
-    showPage();
+    updateReadingPage();
   } else if (section + direction >= 0 && section + direction < active.chapters.length) {
     section += direction;
     showSection(direction < 0 ? Infinity : 0);
@@ -366,6 +368,7 @@ $('sections').addEventListener('change', event => {
 });
 $('close').onclick = () => reader.close();
 reader.addEventListener('close', () => {
+  window.dispatchEvent(new CustomEvent('spine-carousel-paused', {detail: false}));
   chapterReady = false;
   chapter.removeAttribute('src');
 });
@@ -621,7 +624,16 @@ function showPage() {
 window.addEventListener('hashchange', showPage);
 showPage();
 
+let oceanWatchTimer;
+let oceanWindowOpened = false;
+let oceanCheckRunning = false;
+function scheduleOceanCheck() {
+  clearTimeout(oceanWatchTimer);
+  if (oceanWindowOpened && !document.hidden) oceanWatchTimer = setTimeout(checkOceanDownloads, 10000);
+}
 async function checkOceanDownloads() {
+  if (document.hidden || oceanCheckRunning) return;
+  oceanCheckRunning = true;
   try {
     const response = await fetch('/ocean-imports', {cache: 'no-store'});
     if (!response.ok) return;
@@ -632,13 +644,17 @@ async function checkOceanDownloads() {
     }
     render();
     $('search-status').textContent = 'Imported ' + imported.map(book => book.title).join(', ') + ' into your library.';
+  } catch {
+    // A transient network error should not interrupt reading.
   } finally {
-    setTimeout(() => checkOceanDownloads().catch(() => {}), 3000);
+    oceanCheckRunning = false;
+    scheduleOceanCheck();
   }
 }
-setTimeout(() => checkOceanDownloads().catch(() => {}), 3000);
+window.addEventListener('ocean-window-opened', () => { oceanWindowOpened = true; scheduleOceanCheck(); });
+document.addEventListener('visibilitychange', scheduleOceanCheck);
 
-const buttonClickSound = new Audio('/button-click.mp3');
+const buttonClickSound = new Audio('/button-click.wav');
 buttonClickSound.preload = 'auto';
 
 document.addEventListener('click', event => {

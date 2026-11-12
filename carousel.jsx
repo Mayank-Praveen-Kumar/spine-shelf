@@ -27,11 +27,11 @@ function placeholder(book, color) {
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, 240, 320);
-  ctx.strokeStyle = '#f4d5a388';
+  ctx.strokeStyle = '#ffffff35';
   ctx.strokeRect(12, 12, 216, 296);
-  ctx.fillStyle = '#fff0d8';
+  ctx.fillStyle = '#f5f5f5';
   ctx.textAlign = 'center';
-  ctx.font = 'bold 22px Georgia';
+  ctx.font = '600 22px Segoe UI';
   const lines = [];
   let line = '';
   for (const word of book.title.split(/\s+/)) {
@@ -81,7 +81,7 @@ window.renderBookCarousel = (books, colors, onOpen) => {
   root.render(items.length ? (
     <CarouselBoundary>
       <FlexCarousel items={items} preset="liquid" intro="rise" fit="portrait"
-        cardHeight={0.56} radius={12} gap={16} focusOnClick={false}
+        cardHeight={0.56} radius={16} gap={24} focusOnClick={false}
         onCardClick={(index, event, hit) => {
           const click = {index, time: event.timeStamp};
           if (lastClick?.index === index && click.time - lastClick.time < 500) {

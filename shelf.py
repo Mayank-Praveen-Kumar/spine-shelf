@@ -1,4 +1,5 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+import argparse
 from pathlib import Path
 import hashlib
 import json
@@ -182,7 +183,9 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         route = urlsplit(self.path).path
-        if route == "/library":
+        if route == "/health":
+            self.json({"app": "SpineShelf", "version": "0.2.0"})
+        elif route == "/library":
             books = []
             for path in sorted(LIBRARY.glob("*.epub"), key=lambda item: item.stat().st_mtime):
                 try:
@@ -224,13 +227,13 @@ class Handler(SimpleHTTPRequestHandler):
                 self.reply(content, kind)
             except (KeyError, OSError, RuntimeError, zipfile.BadZipFile):
                 self.send_error(404)
-        elif route in ("/", "/style.css", "/app.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.mp3"):
+        elif route in ("/", "/style.css", "/app.js", "/dist/carousel.css", "/dist/carousel.js", "/button-click.wav", "/assets/spine-shelf.ico"):
             path = ROOT / ("index.html" if route == "/" else route[1:])
             if not path.is_file():
                 self.send_error(404)
                 return
-            kind = {".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".mp3": "audio/mpeg"}[path.suffix]
-            self.reply(path.read_bytes(), kind if path.suffix == ".mp3" else kind + "; charset=utf-8")
+            kind = {".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".wav": "audio/wav", ".ico": "image/x-icon"}[path.suffix]
+            self.reply(path.read_bytes(), kind if path.suffix in (".wav", ".ico") else kind + "; charset=utf-8")
         else:
             self.send_error(404)
 
@@ -270,14 +273,19 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Spine Shelf local server")
+    parser.add_argument("--server-only", action="store_true", help="Serve without opening a browser")
+    parser.add_argument("--port", type=int, default=48731)
+    args = parser.parse_args()
     LIBRARY.mkdir(parents=True, exist_ok=True)
     # A stable port keeps reading progress available between launches.
-    with ThreadingHTTPServer(("127.0.0.1", 48731), Handler) as server:
+    with ThreadingHTTPServer(("127.0.0.1", args.port), Handler) as server:
         url = f"http://127.0.0.1:{server.server_port}"
-        try:
-            open_app_window(url)
-        except OSError:
-            webbrowser.open(url)
+        if not args.server_only:
+            try:
+                open_app_window(url)
+            except OSError:
+                webbrowser.open(url)
         print(f"Spine Shelf is running at {url}. Close this console to stop it.", flush=True)
         server.serve_forever()
 

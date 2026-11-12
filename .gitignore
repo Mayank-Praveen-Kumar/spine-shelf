@@ -16,3 +16,6 @@ signup_probe.py
 button-click.mp3
 ZapSplat Sound Preview.html
 *.log
+.cache/
+desktop/bin/
+desktop/obj/

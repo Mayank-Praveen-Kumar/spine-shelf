@@ -1,5 +1,13 @@
 @echo off
 cd /d "%~dp0"
+if exist "release\SpineShelf-0.2.0-win-x64\SpineShelf.exe" (
+    start "" "release\SpineShelf-0.2.0-win-x64\SpineShelf.exe"
+    exit /b
+)
+if exist "build\desktop\SpineShelf.exe" (
+    start "" "build\desktop\SpineShelf.exe" --app-root "%~dp0."
+    exit /b
+)
 if not exist "dist\carousel.js" (
     where npm >nul 2>nul
     if errorlevel 1 (

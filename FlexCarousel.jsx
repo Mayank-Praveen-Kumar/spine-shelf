@@ -95,7 +95,7 @@ const BEND_PRESETS = {
 
 const FIT_ASPECT = { portrait: 0.75, square: 1, landscape: 4 / 3 };
 const TAPS = 12;
-const PIXEL_BUDGET = 4.5e6;
+const PIXEL_BUDGET = 1.5e6;
 const INTRO_DURATION = { rise: 2.1, bloom: 1.6, spin: 2.2, deal: 1.5, fade: 0.35 };
 
 const wrap = (value, size) => ((((value + size / 2) % size) + size) % size) - size / 2;
@@ -338,7 +338,7 @@ const FlexCarousel = ({
     if (!container) return undefined;
 
     const renderer = new Renderer({
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, 1.25),
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
@@ -416,7 +416,7 @@ const FlexCarousel = ({
     });
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 8 : 0;
+    const anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 2 : 0;
 
     let slots = [];
     let width = 1;
@@ -429,6 +429,7 @@ const FlexCarousel = ({
     let raf = 0;
     let last = performance.now();
     let visible = true;
+    let paused = false;
     let alive = true;
     let dirty = true;
     let activeIndex = -1;
@@ -485,7 +486,15 @@ const FlexCarousel = ({
       image.decoding = 'async';
       image.onload = () => {
         if (!alive || !slots.includes(slot)) return;
-        texture.image = image;
+        // Covers can be scans several thousand pixels tall; keep GPU uploads small.
+        const scale = Math.min(1, 768 / Math.max(image.naturalWidth, image.naturalHeight));
+        if (scale < 1) {
+          const thumbnail = document.createElement('canvas');
+          thumbnail.width = Math.max(1, Math.round(image.naturalWidth * scale));
+          thumbnail.height = Math.max(1, Math.round(image.naturalHeight * scale));
+          thumbnail.getContext('2d').drawImage(image, 0, 0, thumbnail.width, thumbnail.height);
+          texture.image = thumbnail;
+        } else texture.image = image;
         texture.update();
         slot.image = [image.naturalWidth || 1, image.naturalHeight || 1];
         slot.aspect = slot.image[0] / slot.image[1];
@@ -695,7 +704,7 @@ const FlexCarousel = ({
     const resize = () => {
       width = Math.max(1, container.clientWidth);
       height = Math.max(1, container.clientHeight);
-      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(PIXEL_BUDGET / (width * height)));
+      renderer.dpr = Math.min(window.devicePixelRatio || 1, 1.25, Math.sqrt(PIXEL_BUDGET / (width * height)));
       renderer.setSize(width, height);
       target.setSize(Math.max(2, Math.round(width * renderer.dpr)), Math.max(2, Math.round(height * renderer.dpr)));
       lensUniforms.tScene.value = target.texture;
@@ -705,7 +714,7 @@ const FlexCarousel = ({
 
     const frame = now => {
       raf = 0;
-      if (!alive) return;
+      if (!alive || !visible || paused || document.hidden) return;
       const s = settingsRef.current;
       const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
       last = now;
@@ -984,7 +993,7 @@ const FlexCarousel = ({
     };
 
     const start = () => {
-      if (raf || !visible || !alive) return;
+      if (raf || !visible || !alive || paused || document.hidden) return;
       last = performance.now();
       raf = requestAnimationFrame(frame);
     };
@@ -1180,8 +1189,10 @@ const FlexCarousel = ({
       hasFocus = false;
     };
     const onVisibility = () => {
-      if (!document.hidden) start();
+      if (document.hidden || paused || !visible) { cancelAnimationFrame(raf); raf = 0; }
+      else { dirty = true; start(); }
     };
+    const onReaderVisibility = event => { paused = event.detail; onVisibility(); };
 
     container.addEventListener('pointerdown', onPointerDown);
     container.addEventListener('pointermove', onPointerMove);
@@ -1193,12 +1204,13 @@ const FlexCarousel = ({
     container.addEventListener('focus', onFocus);
     container.addEventListener('blur', onBlur);
     document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('spine-carousel-paused', onReaderVisibility);
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      start();
+      onVisibility();
     });
     intersectionObserver.observe(container);
 
@@ -1230,6 +1242,7 @@ const FlexCarousel = ({
       container.removeEventListener('focus', onFocus);
       container.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('spine-carousel-paused', onReaderVisibility);
       slots.forEach(slot => slot.dispose());
       slots = [];
       gl.getExtension('WEBGL_lose_context')?.loseContext();

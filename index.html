@@ -4,33 +4,47 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spine Shelf</title>
+<link rel="icon" href="/assets/spine-shelf.ico">
 <link rel="stylesheet" href="/style.css">
 <script defer src="/app.js"></script>
 <link rel="stylesheet" href="/dist/carousel.css">
 <script defer src="/dist/carousel.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#view-content">Skip to content</a>
 <nav class="app-nav" aria-label="Spine Shelf">
-  <a id="nav-search" href="#">Search</a>
-  <a id="nav-library" href="#library">Library</a>
+  <a class="brand" href="#" aria-label="Spine Shelf home" title="Spine Shelf">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5.5h6a3 3 0 0 1 2 1 3 3 0 0 1 2-1h6v14h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4zM12 6.5v14"/></svg>
+  </a>
+  <div class="nav-pages">
+    <a id="nav-search" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>Search</span></a>
+    <a id="nav-library" href="#library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><path d="m16 5 3-1 4 15-3 1z"/></svg><span>Library</span></a>
+  </div>
+  <span class="rail-caption" aria-hidden="true">SS</span>
 </nav>
+<div class="app-workspace" id="view-content" tabindex="-1">
+<div class="app-topbar"><span class="wordmark">Spine Shelf</span><span class="local-badge"><i></i>Your reading space</span></div>
 <main id="search-home" aria-label="Search for EPUB books online">
+  <div class="search-intro"><span class="eyebrow">DISCOVER</span><h1>Your next chapter<br>starts here.</h1><p>Find a book. Make a little room for yourself.</p></div>
   <div id="epub-search"></div>
+  <p class="search-note">Search for English EPUBs · Choose a source below</p>
   <p id="search-status" role="status"></p>
+  <a class="library-shortcut" href="#library">Or settle into your library <span aria-hidden="true">↗</span></a>
 </main>
 <main id="library" hidden>
-<header><span class="wordmark">SPINE SHELF</span><button id="import">＋ Import EPUBs</button><input id="files" type="file" accept=".epub" multiple hidden></header>
-<section class="intro"><p>YOUR PERSONAL LIBRARY</p><h1>The reading room</h1><span id="count"></span></section>
+<header class="library-heading"><div class="intro"><p class="eyebrow">YOUR COLLECTION</p><h1>The reading room</h1><span id="count"></span></div><button id="import" class="primary">＋ Import EPUBs</button><input id="files" type="file" accept=".epub" multiple hidden></header>
 <div class="shelf-controls">
   <label>Shelf <select id="shelf-select"><option value="">All books</option></select></label>
   <form id="create-shelf"><input id="shelf-name" aria-label="New shelf name" placeholder="New shelf name" maxlength="60" required><button>Create shelf</button></form>
   <label id="add-existing" hidden>Add book <select id="existing-book" aria-label="Add an existing book"></select></label>
   <button id="background-settings" type="button" hidden>Background</button>
 </div>
+<div class="collection-label"><span>On your shelf</span><span class="collection-detail">A little escape, always here.</span></div>
 <div id="shelf" aria-label="Bookshelf"><div id="books"></div><div id="cover-gallery"></div></div>
 <p id="hint">Drag to browse · Double-click a book to read</p>
 <p id="status" role="status"></p>
 </main>
+</div>
 <dialog id="background-dialog" aria-labelledby="background-title">
   <form method="dialog" class="background-header"><h2 id="background-title">Shelf background</h2><button>Done</button></form>
   <div class="shelf-controls">
